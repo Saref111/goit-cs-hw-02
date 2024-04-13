@@ -1,19 +1,18 @@
 #!/bin/bash
 
-websites=("https://google.com" "https://facebook.com" "https://twitter.com")
+websites=("https://google.com" "https://github.com" 
+    "https://facebook.com" "https://twitter.com")
 
-log_file="website_status.log"
+logfile="website_status.log"
 
-> $log_file
+>"$logfile"
 
-for website in "${websites[@]}"; do
-    http_status=$(curl -Is $website | head -n 1 | cut -d ' ' -f 2)
-
-    if [ "$http_status" == "200" ]; then
-        echo "$website is UP" >> $log_file
+for site in "${websites[@]}"; do
+    if curl -s -L --head --request GET -w "%{http_code}\n" "$site" | grep "200 OK" >/dev/null; then
+        echo "$site is UP" >>"$logfile"
     else
-        echo "$website is DOWN, status code: $http_status" >> $log_file
+        echo "$site is DOWN" >>"$logfile"
     fi
 done
 
-echo "Результати записано у файл логів: $log_file"
+echo "Resultes added to $logfile"
